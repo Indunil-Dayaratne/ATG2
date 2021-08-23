@@ -4,11 +4,16 @@ using System.Text;
 
 namespace ATG.CodeTest
 {
-   public class FailoverLotRepository
+    public interface IFailoverLotRepository
+    {
+        Lot GetLot(int id);
+    }
+
+    public class FailoverLotRepository : IFailoverLotRepository
     {
         public Lot GetLot(int id)
         {
-            return new Lot();
+            return new Lot {Id = id};
         }
     }
 }

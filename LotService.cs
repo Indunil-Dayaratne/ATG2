@@ -6,33 +6,47 @@ namespace ATG.CodeTest
 {
     public class LotService
     {
-        public Lot GetLot(int id, bool isLotArchived)
+        private readonly bool _isFailoverModeEnabled;
+        private readonly int _maxFailedRequests;
+        private readonly IFailoverLotRepository _failoverLotRepository;
+        private readonly IArchivedRepository _archivedRepository;
+        private readonly ILotRepository _lotRepository;
+        private readonly IFailoverLotEntryDataLoader _failoverLotEntryDataLoader;
+        private readonly ICurrentDateTimeProvider _currentDateTimeProvider;
+
+        public LotService(bool isFailoverModeEnabled, int maxFailedRequests, IFailoverLotRepository failoverLotRepository, IArchivedRepository archivedRepository, ILotRepository lotRepository, IFailoverLotEntryDataLoader failoverLotEntryDataLoader, ICurrentDateTimeProvider currentDateTimeProvider)
         {
-            bool isFailoverModeEnabled = true;
-            int MaxFailedRequests = 50;
-            Lot lot = null;
-
-            var failoverLots = GetFailOverLotEntries();
-            var failedRequests = failoverLots.Where(failoverLotsEntry => failoverLotsEntry.DateTime > DateTime.Now.AddMinutes(10)).Count();
-            if ((failedRequests > MaxFailedRequests) && isFailoverModeEnabled)
-            {
-                lot = new FailoverLotRepository().GetLot(id);
-            }
-
-            if (lot.IsArchived && isLotArchived)
-            {
-                return new ArchivedRepository().GetLot(id);
-            }
-            else
-            {
-                return new LotRepository().LoadCustomer();
-            }
+            _isFailoverModeEnabled = isFailoverModeEnabled;
+            _maxFailedRequests = maxFailedRequests;
+            _failoverLotRepository = failoverLotRepository;
+            _archivedRepository = archivedRepository;
+            _lotRepository = lotRepository;
+            _failoverLotEntryDataLoader = failoverLotEntryDataLoader;
+            _currentDateTimeProvider = currentDateTimeProvider;
         }
 
-        public List<FailoverLots> GetFailOverLotEntries()
+        public Lot GetLot(int id, bool isLotArchived)
         {
-            // return all from fail entries from database
-            return new List<FailoverLots>();
+            Lot lot = null;
+
+            var failoverLots = _failoverLotEntryDataLoader.GetFailOverLotEntries();
+            var failedRequests = failoverLots.Count(failoverLotsEntry => failoverLotsEntry.DateTime > _currentDateTimeProvider.GetCurrentDateTime().AddMinutes(10));
+            if ((failedRequests > _maxFailedRequests) && _isFailoverModeEnabled)
+            {
+                lot = _failoverLotRepository.GetLot(id);
+            }
+
+            if (lot != null)
+            {
+                return lot.IsArchived ? _archivedRepository.GetLot(id) : lot;
+            }
+
+            if (isLotArchived)
+            {
+                return _archivedRepository.GetLot(id);
+            }
+
+            return _lotRepository.GetLot(id);
         }
     }
 }
