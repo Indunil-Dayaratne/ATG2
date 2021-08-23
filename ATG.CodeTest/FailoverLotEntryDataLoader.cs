@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ATG.CodeTest
 {
     public interface IFailoverLotEntryDataLoader
     {
-        List<FailoverLots> GetFailOverLotEntries();
+        Task<List<FailoverLots>> GetFailOverLotEntriesAsync();
     }
 
     public class FailoverLotEntryDataLoader : IFailoverLotEntryDataLoader
     {
-        public List<FailoverLots> GetFailOverLotEntries()
+        public async Task<List<FailoverLots>> GetFailOverLotEntriesAsync()
         {
             // return all from fail entries from database
-            return new List<FailoverLots>();
+            return await Task.FromResult(new List<FailoverLots>());
         }
     }
 }

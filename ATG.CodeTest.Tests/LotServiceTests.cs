@@ -2,7 +2,8 @@
 
 namespace ATG.CodeTest.Tests
 {
-    public class Class1
+    public class LotServiceTests
     {
+         
     }
 }

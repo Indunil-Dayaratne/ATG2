@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ATG.CodeTest
 {
@@ -14,7 +15,10 @@ namespace ATG.CodeTest
         private readonly IFailoverLotEntryDataLoader _failoverLotEntryDataLoader;
         private readonly ICurrentDateTimeProvider _currentDateTimeProvider;
 
-        public LotService(bool isFailoverModeEnabled, int maxFailedRequests, IFailoverLotRepository failoverLotRepository, IArchivedRepository archivedRepository, ILotRepository lotRepository, IFailoverLotEntryDataLoader failoverLotEntryDataLoader, ICurrentDateTimeProvider currentDateTimeProvider)
+        public LotService(bool isFailoverModeEnabled, int maxFailedRequests,
+            IFailoverLotRepository failoverLotRepository, IArchivedRepository archivedRepository,
+            ILotRepository lotRepository, IFailoverLotEntryDataLoader failoverLotEntryDataLoader,
+            ICurrentDateTimeProvider currentDateTimeProvider)
         {
             _isFailoverModeEnabled = isFailoverModeEnabled;
             _maxFailedRequests = maxFailedRequests;
@@ -25,28 +29,28 @@ namespace ATG.CodeTest
             _currentDateTimeProvider = currentDateTimeProvider;
         }
 
-        public Lot GetLot(int id, bool isLotArchived)
+        public async Task<Lot> GetLot(int id, bool isLotArchived)
         {
             Lot lot = null;
 
-            var failoverLots = _failoverLotEntryDataLoader.GetFailOverLotEntries();
+            var failoverLots = await _failoverLotEntryDataLoader.GetFailOverLotEntriesAsync();
             var failedRequests = failoverLots.Count(failoverLotsEntry => failoverLotsEntry.DateTime > _currentDateTimeProvider.GetCurrentDateTime().AddMinutes(10));
             if ((failedRequests > _maxFailedRequests) && _isFailoverModeEnabled)
             {
-                lot = _failoverLotRepository.GetLot(id);
+                lot = await _failoverLotRepository.GetLotAsync(id);
             }
 
             if (lot != null)
             {
-                return lot.IsArchived ? _archivedRepository.GetLot(id) : lot;
+                return lot.IsArchived ? await _archivedRepository.GetLotAsync(id) : lot;
             }
 
             if (isLotArchived)
             {
-                return _archivedRepository.GetLot(id);
+                return await _archivedRepository.GetLotAsync(id);
             }
 
-            return _lotRepository.GetLot(id);
+            return await _lotRepository.GetLotAsync(id);
         }
     }
 }
