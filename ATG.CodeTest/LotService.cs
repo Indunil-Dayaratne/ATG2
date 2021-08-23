@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ namespace ATG.CodeTest
             _currentDateTimeProvider = currentDateTimeProvider ?? throw new ArgumentNullException(nameof(currentDateTimeProvider));
         }
 
-        public async Task<Lot> GetLot(int id, bool isLotArchived)
+        public async Task<Lot> GetLotAsync(int id, bool isLotArchived)
         {
             Lot lot = null;
 

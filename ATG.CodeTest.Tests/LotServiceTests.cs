@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -33,31 +34,51 @@ namespace ATG.CodeTest.Tests
         }
 
         [Fact]
-        public async Task GetLotLoadsDataFromArchivedDataStore()
+        public async Task GetLotAsyncLoadsDataFromArchivedDataStore()
+        {
+            var mockFailoverLotRepository = new Mock<IFailoverLotRepository>();
+            var mockArchivedRepository = new Mock<IArchivedRepository>();
+            var mockLotRepository = new Mock<ILotRepository>();
+            var mockFailoverLotEntryDataLoader = new Mock<IFailoverLotEntryDataLoader>();
+            var mockCurrentDateTimeProvider = new Mock<ICurrentDateTimeProvider>();
+
+            var service = new LotService(true, 50, mockFailoverLotRepository.Object, mockArchivedRepository.Object,
+                mockLotRepository.Object, mockFailoverLotEntryDataLoader.Object, mockCurrentDateTimeProvider.Object);
+
+            mockFailoverLotEntryDataLoader.Setup(x => x.GetFailOverLotEntriesAsync())
+                .ReturnsAsync(new List<FailoverLots>());
+
+            mockCurrentDateTimeProvider.Setup(x => x.GetCurrentDateTime()).Returns(DateTime.UtcNow);
+
+            const int id = 123;
+
+            await service.GetLotAsync(id, true);
+
+            mockArchivedRepository.Verify(x=>x.GetLotAsync(id), Times.Once);
+            mockFailoverLotRepository.Verify(x=>x.GetLotAsync(id), Times.Never);
+            mockLotRepository.Verify(x=>x.GetLotAsync(id), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetLotAsyncLoadsDataFromFailoverDataStore()
         {
 
         }
 
         [Fact]
-        public async Task GetLotLoadsDataFromFailoverDataStore()
+        public async Task GetLotAsyncLoadsDataFromBothFailoverAndArchivedDataStores()
         {
 
         }
 
         [Fact]
-        public async Task GetLotLoadsDataFromBothFailoverAndArchivedDataStores()
+        public async Task GetLotAsyncLoadsDataFromMainDataStore()
         {
 
         }
 
         [Fact]
-        public async Task GetLotLoadsDataFromMainDataStore()
-        {
-
-        }
-
-        [Fact]
-        public async Task GetLotLoadsDataFromBothMainAndArchivedDataStores()
+        public async Task GetLotAsyncLoadsDataFromBothMainAndArchivedDataStores()
         {
 
         }
