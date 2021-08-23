@@ -22,11 +22,11 @@ namespace ATG.CodeTest
         {
             _isFailoverModeEnabled = isFailoverModeEnabled;
             _maxFailedRequests = maxFailedRequests;
-            _failoverLotRepository = failoverLotRepository;
-            _archivedRepository = archivedRepository;
-            _lotRepository = lotRepository;
-            _failoverLotEntryDataLoader = failoverLotEntryDataLoader;
-            _currentDateTimeProvider = currentDateTimeProvider;
+            _failoverLotRepository = failoverLotRepository ?? throw new ArgumentNullException(nameof(failoverLotRepository));
+            _archivedRepository = archivedRepository ?? throw new ArgumentNullException(nameof(archivedRepository));
+            _lotRepository = lotRepository ?? throw new ArgumentNullException(nameof(lotRepository));
+            _failoverLotEntryDataLoader = failoverLotEntryDataLoader ?? throw new ArgumentNullException(nameof(failoverLotEntryDataLoader));
+            _currentDateTimeProvider = currentDateTimeProvider ?? throw new ArgumentNullException(nameof(currentDateTimeProvider));
         }
 
         public async Task<Lot> GetLot(int id, bool isLotArchived)
@@ -50,7 +50,14 @@ namespace ATG.CodeTest
                 return await _archivedRepository.GetLotAsync(id);
             }
 
-            return await _lotRepository.GetLotAsync(id);
+            lot = await _lotRepository.GetLotAsync(id);
+
+            if (lot != null)
+            {
+                return lot.IsArchived ? await _archivedRepository.GetLotAsync(id) : lot;
+            }
+
+            return lot;
         }
     }
 }
