@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ATG.CodeTest.Models;
 
-namespace ATG.CodeTest
+namespace ATG.CodeTest.DataAccess
 {
-    public interface IFailoverLotEntryDataLoader
-    {
-        Task<List<FailoverLots>> GetFailOverLotEntriesAsync();
-    }
-
     public class FailoverLotEntryDataLoader : IFailoverLotEntryDataLoader
     {
         public async Task<List<FailoverLots>> GetFailOverLotEntriesAsync()

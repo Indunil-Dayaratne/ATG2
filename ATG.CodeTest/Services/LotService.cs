@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ATG.CodeTest.DataAccess;
+using ATG.CodeTest.Models;
+using ATG.CodeTest.Utils;
 
-namespace ATG.CodeTest
+namespace ATG.CodeTest.Services
 {
-    public class LotService
+    public class LotService : ILotService
     {
         private readonly bool _isFailoverModeEnabled;
         private readonly int _maxFailedRequests;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ATG.CodeTest
+﻿namespace ATG.CodeTest.Models
 {
    public class Lot
     {

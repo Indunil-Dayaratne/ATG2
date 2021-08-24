@@ -1,13 +1,9 @@
 ﻿using System.Threading.Tasks;
+using ATG.CodeTest.Models;
 
-namespace ATG.CodeTest
+namespace ATG.CodeTest.DataAccess
 {
-    public interface ILotRepository
-    { 
-        Task<Lot> GetLotAsync(int id);
-    }
-
-    public class LotRepository : ILotRepository
+    public class ArchivedRepository : IArchivedRepository
     {
         public async Task<Lot> GetLotAsync(int id)
         {

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ATG.CodeTest.DataAccess;
+using ATG.CodeTest.Models;
+using ATG.CodeTest.Services;
+using ATG.CodeTest.Utils;
 using Moq;
 using Xunit;
 
-namespace ATG.CodeTest.Tests
+namespace ATG.CodeTest.Tests.Services
 {
     public class LotServiceTests
     {

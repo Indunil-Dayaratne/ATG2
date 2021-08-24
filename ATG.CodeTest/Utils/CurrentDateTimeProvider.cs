@@ -1,12 +1,7 @@
 ﻿using System;
 
-namespace ATG.CodeTest
+namespace ATG.CodeTest.Utils
 {
-    public interface ICurrentDateTimeProvider
-    {
-        DateTime GetCurrentDateTime();
-    }
-
     public class CurrentDateTimeProvider : ICurrentDateTimeProvider
     {
         public DateTime GetCurrentDateTime()
